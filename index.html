@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сестре Юле — С 8 марта!!!</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=Newsreader:ital,wght@0,300;1,300;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --tangerine: #ff6b35;
+    --peach: #ffa07a;
+    --peach-pale: #fff5f0;
+    --teal: #2dd4bf;
+    --navy: #0f172a;
+    --gold: #fbbf24;
+    --cream: #fffbf7;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    font-family: 'Unbounded', sans-serif;
+    color: white;
+    overflow-x: hidden;
+  }
+
+  /* Scanlines texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* Moving gradient bg */
+  .bg-gradient {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(255,107,53,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(45,212,191,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(251,191,36,0.08) 0%, transparent 50%),
+                #0f172a;
+    animation: bgShift 8s ease-in-out infinite;
+  }
+
+  @keyframes bgShift {
+    0%,100% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(15deg); }
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px 100px;
+  }
+
+  /* Hero section */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 0;
+    position: relative;
+  }
+
+  .hero-label {
+    font-size: 10px;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 25px;
+    opacity: 0;
+    animation: appear 0.8s 0.3s forwards;
+  }
+
+  .hero-title {
+    font-size: clamp(60px, 16vw, 130px);
+    font-weight: 900;
+    line-height: 0.9;
+    color: var(--tangerine);
+    opacity: 0;
+    animation: appear 0.8s 0.6s forwards;
+    position: relative;
+  }
+
+  .hero-title .outline {
+    -webkit-text-stroke: 2px var(--tangerine);
+    color: transparent;
+  }
+
+  .hero-title .block {
+    display: block;
+    font-size: clamp(30px, 7vw, 60px);
+    font-weight: 300;
+    color: white;
+    letter-spacing: 4px;
+    margin-top: 10px;
+  }
+
+  .hero-scroll {
+    margin-top: 60px;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    animation: appear 0.8s 1.5s forwards;
+  }
+
+  .hero-scroll::after {
+    content: '';
+    flex: 1;
+    max-width: 80px;
+    height: 1px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* Photo placeholder / upload */
+  .photo-section {
+    margin: 20px 0 60px;
+    position: relative;
+  }
+
+  .photo-container {
+    width: 100%;
+    border: 2px dashed rgba(255,107,53,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    background: rgba(255,107,53,0.04);
+    min-height: 200px;
+  }
+
+  .photo-container:hover {
+    border-color: var(--tangerine);
+    background: rgba(255,107,53,0.08);
+  }
+
+  .photo-container img {
+    width: 100%;
+    height: auto;
+    display: none;
+    object-fit: contain;
+  }
+
+  .photo-container img.loaded {
+    display: block;
+  }
+
+  .photo-placeholder {
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .photo-placeholder .ph-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+  }
+
+  .photo-placeholder .ph-text {
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,107,53,0.7);
+    margin-bottom: 8px;
+  }
+
+  .photo-placeholder .ph-sub {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .photo-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .corner-deco {
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--tangerine);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .corner-deco.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+  .corner-deco.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+  .corner-deco.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+  .corner-deco.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+  /* Cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin: 60px 0;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+  }
+  .cards-grid.vis { opacity: 1; transform: translateY(0); }
+
+  .grid-card {
+    padding: 35px 25px;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: transform 0.3s;
+  }
+
+  .grid-card:hover { transform: scale(1.02); }
+
+  .gc-1 { background: var(--tangerine); color: var(--navy); }
+  .gc-2 { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+  .gc-3 { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+  .gc-4 { background: var(--teal); color: var(--navy); }
+
+  .gc-num {
+    font-size: 60px;
+    font-weight: 900;
+    line-height: 1;
+    opacity: 0.15;
+    position: absolute;
+    bottom: 10px; right: 15px;
+  }
+
+  .gc-emoji { font-size: 28px; margin-bottom: 12px; }
+  .gc-title { font-size: 13px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
+  .gc-text { font-family: 'Newsreader', serif; font-style: italic; font-size: 15px; line-height: 1.7; opacity: 0.85; }
+
+  /* Big quote section */
+  .quote-section {
+    padding: 80px 0;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+  }
+  .quote-section.vis { opacity: 1; transform: translateY(0); }
+
+  .quote-number {
+    font-size: 200px;
+    font-weight: 900;
+    color: rgba(255,107,53,0.08);
+    line-height: 1;
+    position: absolute;
+    top: -30px;
+    left: -20px;
+  }
+
+  .quote-inner {
+    position: relative;
+  }
+
+  .quote-text {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: clamp(22px, 4vw, 36px);
+    line-height: 1.6;
+    font-weight: 300;
+    color: white;
+    margin-bottom: 25px;
+  }
+
+  .quote-text em {
+    color: var(--tangerine);
+    font-style: normal;
+  }
+
+  .quote-attr {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* Message builder */
+  .builder-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 40px;
+    margin: 60px 0;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+  }
+  .builder-section.vis { opacity: 1; transform: translateY(0); }
+
+  .builder-label {
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 25px;
+  }
+
+  .wish-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .chip {
+    padding: 8px 18px;
+    border: 1px solid rgba(255,107,53,0.4);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .chip.active {
+    background: var(--tangerine);
+    border-color: var(--tangerine);
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .generated-wish {
+    min-height: 60px;
+    padding: 20px;
+    background: rgba(255,107,53,0.08);
+    border-left: 3px solid var(--tangerine);
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.7;
+    transition: all 0.4s;
+  }
+
+  /* Final */
+  .final-block {
+    text-align: center;
+    padding: 80px 0 40px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.7s ease;
+  }
+  .final-block.vis { opacity: 1; transform: translateY(0); }
+
+  .final-big {
+    font-size: clamp(40px, 10vw, 80px);
+    font-weight: 900;
+    color: var(--tangerine);
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+
+  .final-sub {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 40px;
+  }
+
+  .hearts-btn {
+    background: none;
+    border: 2px solid var(--tangerine);
+    color: var(--tangerine);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 16px 45px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .hearts-btn:hover {
+    background: var(--tangerine);
+    color: var(--navy);
+  }
+
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0.5); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+
+<div class="page">
+
+  <div class="hero">
+    <p class="hero-label"> С 8 марта!</p>
+    <h1 class="hero-title">
+      Юля
+      <span class="outline">Жукова</span>
+      <span class="block">Старшая сестра</span>
+    </h1>
+    <p class="hero-scroll">Листай вниз</p>
+  </div>
+
+  <!-- Photo upload -->
+  <div class="photo-section">
+    <div class="photo-container" id="photoContainer">
+      <img id="photoImg" alt="Фото Юли" src="s.png" class="loaded">
+      <div class="photo-placeholder" id="photoPlaceholder" style="display:none;">
+        <div class="ph-icon">📷</div>
+        <p class="ph-text">Добавь фото Юли</p>
+        <p class="ph-sub">нажми сюда, чтобы загрузить</p>
+      </div>
+      <input type="file" accept="image/*" class="photo-input" onchange="loadPhoto(this)">
+      <div class="corner-deco tl"></div>
+      <div class="corner-deco tr"></div>
+      <div class="corner-deco bl"></div>
+      <div class="corner-deco br"></div>
+    </div>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="cards-grid" id="cg">
+    <div class="grid-card gc-1">
+      <div class="gc-emoji">🌟</div>
+      <div class="gc-title">Своя</div>
+      <div class="gc-text">Сестра — это навсегда. Родная кровь и душа</div>
+      <div class="gc-num">01</div>
+    </div>
+    <div class="grid-card gc-2">
+      <div class="gc-emoji">🌸</div>
+      <div class="gc-title">Красивая</div>
+      <div class="gc-text">Снаружи и внутри — просто сияет</div>
+      <div class="gc-num">02</div>
+    </div>
+    <div class="grid-card gc-3">
+      <div class="gc-emoji">💛</div>
+      <div class="gc-title">Любимая</div>
+      <div class="gc-text">Всегда ждём, когда приедет</div>
+      <div class="gc-num">03</div>
+    </div>
+    <div class="grid-card gc-4">
+      <div class="gc-emoji">✨</div>
+      <div class="gc-title">Наша</div>
+      <div class="gc-text">Сколько бы не было расстояние</div>
+      <div class="gc-num">04</div>
+    </div>
+  </div>
+
+  <!-- Quote -->
+  <div class="quote-section" id="qs" style="position:relative;">
+    <div class="quote-number">❝</div>
+    <div class="quote-inner">
+      <p class="quote-text">
+        Сестра — это человек, который знает тебя <em>с самого начала</em>,
+        любит тебя <em>несмотря ни на что</em> и остаётся
+        <em>на всю жизнь.</em>
+      </p>
+      <p class="quote-attr">— С любовью, в этот весенний день</p>
+    </div>
+  </div>
+
+  <!-- Interactive wish builder -->
+  <div class="builder-section" id="bs">
+    <p class="builder-label">✦ Собери своё пожелание</p>
+    <div class="wish-chips">
+      <div class="chip" onclick="toggleChip(this, 'счастья')">Счастья</div>
+      <div class="chip" onclick="toggleChip(this, 'любви')">Любви</div>
+      <div class="chip" onclick="toggleChip(this, 'здоровья')">Здоровья</div>
+      <div class="chip" onclick="toggleChip(this, 'успеха')">Успеха</div>
+      <div class="chip" onclick="toggleChip(this, 'приключений')">Приключений</div>
+      <div class="chip" onclick="toggleChip(this, 'радости')">Радости</div>
+      <div class="chip" onclick="toggleChip(this, 'тепла')">Тепла</div>
+      <div class="chip" onclick="toggleChip(this, 'вдохновения')">Вдохновения</div>
+    </div>
+    <div class="generated-wish" id="generatedWish">
+      Выбери что-нибудь выше и посмотри, что получится ✨
+    </div>
+  </div>
+
+  <!-- Final -->
+  <div class="final-block" id="fb">
+    <div class="final-big">С 8 марта,<br>Юля!</div>
+    <p class="final-sub">Ты — лучшая сестра на свете 🌸</p>
+    <button class="hearts-btn" onclick="rainHearts()">Запустить сердечки 💛</button>
+  </div>
+
+</div>
+
+<script>
+// Photo upload
+function loadPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = document.getElementById('photoImg');
+    img.src = e.target.result;
+    img.classList.add('loaded');
+    document.getElementById('photoPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.15 });
+
+['cg','qs','bs','fb'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) obs.observe(el);
+});
+
+// Wish builder
+const selected = new Set();
+const wishes = {
+  счастья: 'Пусть счастья будет столько, что хватит на всю жизнь',
+  любви: 'пусть тебя любят так, как ты того заслуживаешь',
+  здоровья: 'пусть здоровье никогда не подводит',
+  успеха: 'пусть каждое начинание приносит результат',
+  приключений: 'пусть жизнь удивляет тебя каждый день',
+  радости: 'пусть поводов улыбаться будет бесконечно много',
+  тепла: 'пусть рядом всегда будут тёплые, родные люди',
+  вдохновения: 'пусть каждое утро начинается с энергии и желания жить'
+};
+
+function toggleChip(el, key) {
+  el.classList.toggle('active');
+  if (selected.has(key)) selected.delete(key);
+  else selected.add(key);
+  updateWish();
+}
+
+function updateWish() {
+  const wish = document.getElementById('generatedWish');
+  if (selected.size === 0) {
+    wish.textContent = 'Выбери что-нибудь выше и посмотри, что получится ✨';
+    return;
+  }
+  const parts = [...selected].map(k => wishes[k]);
+  wish.textContent = 'Юля, ' + parts.join(', ') + '. С 8 марта! 🌸';
+}
+
+// Rain hearts
+function rainHearts() {
+  const emojis = ['💛','🌸','✨','🌟','💫','🧡'];
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('div');
+    el.style.cssText = `
+      position:fixed;
+      left:${Math.random()*100}%;
+      top:${60+Math.random()*30}%;
+      font-size:${18+Math.random()*24}px;
+      pointer-events:none;
+      z-index:9999;
+      animation: floatUp ${1.5+Math.random()}s ${Math.random()*0.6}s ease forwards;
+    `;
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  }
+}
+</script>
+</body>
+</html>
